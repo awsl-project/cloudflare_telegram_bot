@@ -1,0 +1,16 @@
+name = "cloudflare_telegram_bot"
+compatibility_date = "2023-12-01"
+node_compat = true
+# routes = [
+# 	{ pattern = "telegrambot.xxx.xxx", custom_domain = true }
+# ]
+
+[vars]
+API_URL = "https://awsl.api.awsl.icu"
+MOYU_URL = "https://moyu.awsl.icu/api/moyu_txt"
+UOMG_URL = "https://api.uomg.com/api/rand.img3?format=json"
+BOT_NAME = "@xxxx_bot"
+OPENAI_API_URL = "https://api.openai.com"
+
+[ai]
+binding = "AI"

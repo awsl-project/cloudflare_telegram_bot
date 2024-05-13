@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts"
+  },
+  "dependencies": {
+    "hono": "^4.3.5",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240403.0",
+    "wrangler": "^3.47.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "telegraf@4.16.3": "patches/telegraf@4.16.3.patch"
+    }
+  }
+}
