@@ -20,7 +20,7 @@ app.use('/admin/*', async (c: Context, next) => {
     return c.text("Need Admin Password", 401)
 });
 
-app.use("/telegram/webhook/:token_index", async (c, next) => {
+app.post("/telegram/webhook/:token_index", async (c) => {
     const { token_index } = c.req.param();
     const tokens = getTelegramTokens(c);
     const token = tokens[parseInt(token_index)];
