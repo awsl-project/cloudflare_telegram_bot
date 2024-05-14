@@ -9,22 +9,16 @@ export function newTelegramBot(c: Context, token: string): Telegraf {
     bot.command("ping", ctx => ctx.reply("pong"))
     bot.command("start", ctx => ctx.reply("type command se to use"))
 
-    bot.command("ping", ctx => ctx.reply("pong"))
-    bot.command("start", ctx => ctx.reply("type command se to use"))
     const send_awsl = async (ctx: TgContext) => {
         const res = await fetch(`${c.env.API_URL}/v2/random`)
         return await ctx.reply(await res.text())
     }
-    bot.command("se", send_awsl)
-    bot.command("sese", send_awsl)
     bot.command("awsl", send_awsl)
 
     const send_moyu = async (ctx: TgContext) => {
         const res = await fetch(c.env.MOYU_URL);
         return await ctx.reply(await res.text())
     }
-    bot.command("moyu", send_moyu)
-    bot.command("mo", send_moyu)
     bot.command("moyuban", send_moyu)
 
     const send_mjx = async (ctx: TgContext) => {
@@ -87,4 +81,21 @@ export function newTelegramBot(c: Context, token: string): Telegraf {
     })
 
     return bot;
+}
+
+export async function initTelegramBotCommands(bot: Telegraf) {
+    await bot.telegram.setMyCommands([
+        {
+            command: "awsl",
+            description: "awsl 随机一图"
+        },
+        {
+            command: "moyuban",
+            description: "摸鱼办提醒"
+        },
+        {
+            command: "mjx",
+            description: "买家秀随机一图"
+        },
+    ]);
 }

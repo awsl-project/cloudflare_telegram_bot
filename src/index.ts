@@ -2,7 +2,7 @@ import { Hono, Context } from 'hono'
 import { ServerResponse } from 'node:http'
 import { getTelegramTokens } from './utils'
 import { Writable } from 'node:stream'
-import { newTelegramBot } from './telegram'
+import { newTelegramBot, initTelegramBotCommands } from './telegram'
 
 const app = new Hono()
 
@@ -51,6 +51,7 @@ app.post("/admin/init", async (c) => {
         console.log(`setting webhook for ${index} to ${webhookUrl}`);
         const bot = newTelegramBot(c, token);
         await bot.telegram.setWebhook(webhookUrl)
+        await initTelegramBotCommands(bot);
     }
     return c.json({
         message: `webhooks set for ${tokens.length} bots`
