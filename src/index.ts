@@ -64,7 +64,11 @@ app.get("/admin/status", async (c) => {
     for (const token of tokens) {
         const bot = newTelegramBot(c, token);
         const info = await bot.telegram.getWebhookInfo()
-        res.push(info)
+        const commands = await bot.telegram.getMyCommands()
+        res.push({
+            commands,
+            info
+        })
     }
     return c.json(res);
 });
