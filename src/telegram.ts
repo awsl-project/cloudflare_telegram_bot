@@ -116,7 +116,9 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
             const response = await openai_chat(prompt)
             const reply = response?.choices[0]?.message?.content
             if (reply) {
-                return await ctx.reply(reply)
+                return await ctx.reply(reply, {
+                    parse_mode: "Markdown"
+                })
             }
         } catch (error) {
             console.error(error)
