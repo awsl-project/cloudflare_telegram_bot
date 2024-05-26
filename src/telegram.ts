@@ -3,6 +3,8 @@ import { Telegraf, Context as TgContext } from "telegraf";
 import { message } from "telegraf/filters";
 import { Context } from "hono";
 
+import { HonoCustomType } from "./type";
+
 const COMMANDS = [
     {
         command: "start",
@@ -27,7 +29,7 @@ const COMMANDS = [
 ]
 
 
-export function newTelegramBot(c: Context, token: string): Telegraf {
+export function newTelegramBot(c: Context<HonoCustomType>, token: string): Telegraf {
     const bot = new Telegraf(token);
 
     bot.use(async (ctx, next) => {
@@ -121,8 +123,8 @@ export function newTelegramBot(c: Context, token: string): Telegraf {
         }
         const response = await c.env.AI.run("@cf/meta/llama-2-7b-chat-int8", {
             prompt: prompt
-        });
-        const reply = response?.result?.response;
+        }) as { response: string };
+        const reply = response?.response;
         if (!reply) {
             console.error("Empty reply from AI")
             return

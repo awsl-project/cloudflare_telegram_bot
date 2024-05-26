@@ -1,13 +1,15 @@
 import { Hono, Context } from 'hono'
 import { ServerResponse } from 'node:http'
-import { getTelegramTokens } from './utils'
 import { Writable } from 'node:stream'
+
+import { HonoCustomType } from './type'
+import { getTelegramTokens } from './utils'
 import { newTelegramBot, initTelegramBotCommands } from './telegram'
 
-const app = new Hono()
+const app = new Hono<HonoCustomType>()
 
 // admin auth
-app.use('/admin/*', async (c: Context, next) => {
+app.use('/admin/*', async (c, next) => {
     // check header x-admin-auth
     const adminAuth = c.req.raw.headers.get("x-admin-auth");
     if (
