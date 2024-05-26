@@ -29,6 +29,16 @@ const COMMANDS = [
 
 export function newTelegramBot(c: Context, token: string): Telegraf {
     const bot = new Telegraf(token);
+
+    bot.use(async (ctx, next) => {
+        try {
+            await next();
+        } catch (error) {
+            console.error(`Error: ${error}`);
+            return await ctx.reply(`Error: ${error}`);
+        }
+    })
+
     bot.command("ping", ctx => ctx.reply("pong"))
 
     bot.command("start", ctx => ctx.reply(
