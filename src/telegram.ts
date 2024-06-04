@@ -48,6 +48,16 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
         COMMANDS.map(c => `/${c.command}: ${c.description}`).join("\n")
     ))
 
+    bot.on(message("new_chat_members"), async (ctx: TgContext) => {
+        // @ts-ignore
+        const chatId = ctx?.message?.chat?.id;
+        if (!chatId) { return; }
+        if (ctx.chat?.type == "private") { return; }
+        const greetChatIds = c.env.GREET_CHAT_IDS?.split(",") || [];
+        if (!greetChatIds.includes(chatId.toString())) { return; }
+        return await ctx.reply(`欢迎新成员加入本群！`);
+    });
+
     const send_awsl = async (ctx: TgContext) => {
         const res = await fetch(`${c.env.API_URL}/v2/random`)
         return await ctx.reply(await res.text())

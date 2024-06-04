@@ -10,6 +10,7 @@ export type Bindings = {
     TELEGRAM_BOT_TOKENS: string;
     OPENAI_API_KEY: string;
     ADMIN_SECRET: string;
+    GREET_CHAT_IDS: string | undefined;
 }
 
 type HonoCustomType = {

@@ -11,6 +11,7 @@ pnpm i
 wrangler secret put TELEGRAM_BOT_TOKENS
 wrangler secret put OPENAI_API_KEY
 wrangler secret put ADMIN_SECRET
+# wrangler secret put GREET_CHAT_IDS
 pnpm run deploy
 ```
 
