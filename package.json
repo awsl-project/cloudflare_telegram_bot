@@ -4,16 +4,17 @@
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
-    "hono": "^4.4.3",
+    "hono": "^4.8.0",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240603.0",
-    "wrangler": "^3.58.0"
+    "@cloudflare/workers-types": "^4.20250619.0",
+    "wrangler": "^4.20.3"
   },
   "pnpm": {
     "patchedDependencies": {
       "telegraf@4.16.3": "patches/telegraf@4.16.3.patch"
     }
-  }
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

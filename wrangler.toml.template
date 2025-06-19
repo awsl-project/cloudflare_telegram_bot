@@ -1,6 +1,6 @@
 name = "cloudflare_telegram_bot"
-compatibility_date = "2023-12-01"
-node_compat = true
+compatibility_date = "2025-04-01"
+compatibility_flags = [ "nodejs_compat" ]
 # routes = [
 # 	{ pattern = "telegrambot.xxx.xxx", custom_domain = true }
 # ]

@@ -85,7 +85,7 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
             {
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": c.env.OPENAI_API_KEY,
+                    "Authorization": `Bearer ${c.env.OPENAI_API_KEY}`,
                 },
                 method: "POST",
                 body: JSON.stringify({
