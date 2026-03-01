@@ -147,7 +147,16 @@ export function renderAdminPageHtml(): string {
     const cached = localStorage.getItem(storageKey) || "";
     if (cached) {
       input.value = cached;
-      setStatus("已读取上次密码，可直接执行 Init");
+      setStatus("正在读取 /admin/status ...");
+      fetchStatus(cached)
+        .then((statusText) => {
+          setStatus("已刷新 /admin/status");
+          setJson(pretty(statusText));
+        })
+        .catch((err) => {
+          setStatus("读取 /admin/status 失败");
+          setJson(err && err.message ? err.message : String(err));
+        });
     }
   </script>
 </body>
