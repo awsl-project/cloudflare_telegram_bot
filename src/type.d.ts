@@ -3,7 +3,6 @@ export type Bindings = {
     AI: Ai;
     API_URL: string;
     MOYU_URL: string;
-    UOMG_URL: string;
     BOT_NAME: string;
     OPENAI_API_URL: string;
     // tokens

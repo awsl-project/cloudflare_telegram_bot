@@ -1,6 +1,7 @@
 
 import { Telegraf, Context as TgContext } from "telegraf";
 import { message } from "telegraf/filters";
+import { fmt, join, mention } from "telegraf/format";
 import { Context } from "hono";
 
 import { HonoCustomType } from "./type";
@@ -17,10 +18,6 @@ const COMMANDS = [
     {
         command: "moyuban",
         description: "摸鱼办提醒"
-    },
-    {
-        command: "mjx",
-        description: "买家秀随机一图"
     },
     {
         command: "chatgpt",
@@ -55,7 +52,10 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
         if (ctx.chat?.type == "private") { return; }
         const greetChatIds = c.env.GREET_CHAT_IDS?.split(",") || [];
         if (!greetChatIds.includes(chatId.toString())) { return; }
-        return await ctx.reply(`欢迎新成员加入本群！`);
+        const members = (ctx.message?.new_chat_members || []).filter((u) => !u.is_bot);
+        if (members.length === 0) { return; }
+        const users = join(members.map((u) => mention(u.first_name, u)), "、");
+        return await ctx.reply(fmt`欢迎 ${users} 加入本群！`);
     });
 
     const send_awsl = async (ctx: TgContext) => {
@@ -69,15 +69,6 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
         return await ctx.reply(await res.text())
     }
     bot.command("moyuban", send_moyu)
-
-    const send_mjx = async (ctx: TgContext) => {
-        const res = await fetch(c.env.UOMG_URL)
-        const data = await res.json() as { imgurl: string }
-        return await ctx.reply(data["imgurl"])
-    }
-
-    bot.command("maijiaxiu", send_mjx)
-    bot.command("mjx", send_mjx)
 
     async function openai_chat(prompt: string): Promise<any> {
         const response = await fetch(
@@ -102,7 +93,11 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
         // @ts-ignore
         const prompt = ctx?.message?.text.slice("/chatgpt".length).trim();
         if (!prompt || prompt.length === 0) {
-            return await ctx.reply("请输入聊天内容")
+            return await ctx.reply(
+                "你还没有输入问题。\n" +
+                "用法：/chatgpt 你的问题\n" +
+                "示例：/chatgpt 帮我写一个 TypeScript 防抖函数"
+            )
         }
         return await aicommand(ctx, prompt)
     });
