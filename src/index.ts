@@ -5,6 +5,7 @@ import { Writable } from 'node:stream'
 import { HonoCustomType } from './type'
 import { getTelegramTokens } from './utils'
 import { newTelegramBot, initTelegramBotCommands } from './telegram'
+import { renderAdminPageHtml } from './admin-page'
 
 const app = new Hono<HonoCustomType>()
 
@@ -39,10 +40,8 @@ app.post("/telegram/webhook/:token_index", async (c) => {
     return c.body(body);
 });
 
-app.get('/', (c) => {
-    return c.html(`
-<h1>cloudflare telegram bot</h1>
-`);
+app.get("/", (c) => {
+    return c.html(renderAdminPageHtml());
 });
 
 app.post("/admin/init", async (c) => {
