@@ -52,6 +52,12 @@ export function renderAdminPageHtml(): string {
       background: #fff;
       color: #0f172a;
     }
+    #status {
+      margin-top: 12px;
+      color: #334155;
+      font-size: 14px;
+      min-height: 20px;
+    }
     #result {
       margin-top: 12px;
       border: 1px solid #e2e8f0;
@@ -71,21 +77,25 @@ export function renderAdminPageHtml(): string {
     <h1>Bot 管理面板</h1>
     <div class="row">
       <input id="adminSecret" type="password" placeholder="输入 x-admin-auth 密钥" />
-      <button id="loginBtn" class="secondary" type="button">登录</button>
       <button id="initBtn" type="button">执行 Init</button>
     </div>
-    <div id="result">等待操作...</div>
+    <div id="status">等待操作...</div>
+    <div id="result">{}</div>
   </div>
 
   <script>
     const storageKey = "admin_secret";
     const input = document.getElementById("adminSecret");
-    const loginBtn = document.getElementById("loginBtn");
     const initBtn = document.getElementById("initBtn");
+    const status = document.getElementById("status");
     const result = document.getElementById("result");
 
-    function setResult(message) {
-      result.textContent = message;
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function setJson(text) {
+      result.textContent = text;
     }
 
     function pretty(text) {
@@ -114,48 +124,30 @@ export function renderAdminPageHtml(): string {
       return text;
     }
 
-    loginBtn.addEventListener("click", async () => {
-      const secret = input.value.trim();
-      if (!secret) {
-        setResult("请先填写密码");
-        return;
-      }
-      try {
-        setResult("正在登录...");
-        const text = await fetchStatus(secret);
-        localStorage.setItem(storageKey, secret);
-        setResult("登录成功\\n" + pretty(text));
-      } catch (err) {
-        setResult("登录失败\\n" + (err && err.message ? err.message : String(err)));
-      }
-    });
-
     initBtn.addEventListener("click", async () => {
       const secret = input.value.trim();
       if (!secret) {
-        setResult("请先填写密码");
+        setStatus("请先填写密码");
+        setJson("{}");
         return;
       }
       localStorage.setItem(storageKey, secret);
       try {
-        setResult("正在执行 init...");
-        const initText = await authedFetch("/admin/init", secret, "POST");
+        setStatus("正在执行 init...");
+        await authedFetch("/admin/init", secret, "POST");
         const statusText = await fetchStatus(secret);
-        setResult(
-          "Init 成功\\n" +
-          pretty(initText) +
-          "\\n\\n最新 /admin/status\\n" +
-          pretty(statusText)
-        );
+        setStatus("Init 成功");
+        setJson(pretty(statusText));
       } catch (err) {
-        setResult("Init 失败\\n" + (err && err.message ? err.message : String(err)));
+        setStatus("Init 失败");
+        setJson(err && err.message ? err.message : String(err));
       }
     });
 
     const cached = localStorage.getItem(storageKey) || "";
     if (cached) {
       input.value = cached;
-      setResult("已读取上次密码，可直接执行 Init");
+      setStatus("已读取上次密码，可直接执行 Init");
     }
   </script>
 </body>
