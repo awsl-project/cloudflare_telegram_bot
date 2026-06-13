@@ -1,10 +1,10 @@
 export type Bindings = {
     // bindings
-    AI: Ai;
     API_URL: string;
     MOYU_URL: string;
     BOT_NAME: string;
     OPENAI_API_URL: string;
+    OPENAI_MODEL: string | undefined;
     // tokens
     TELEGRAM_BOT_TOKENS: string;
     OPENAI_API_KEY: string;

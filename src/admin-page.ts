@@ -106,8 +106,8 @@ export function renderAdminPageHtml(): string {
       }
     }
 
-    async function fetchStatus(secret) {
-      return await authedFetch("/admin/status", secret, "GET");
+    function errMessage(err) {
+      return err && err.message ? err.message : String(err);
     }
 
     async function authedFetch(path, secret, method = "POST") {
@@ -124,6 +124,18 @@ export function renderAdminPageHtml(): string {
       return text;
     }
 
+    async function refreshStatus(secret, okMessage) {
+      setStatus("正在读取 /admin/status ...");
+      try {
+        const text = await authedFetch("/admin/status", secret, "GET");
+        setStatus(okMessage);
+        setJson(pretty(text));
+      } catch (err) {
+        setStatus("读取 /admin/status 失败");
+        setJson(errMessage(err));
+      }
+    }
+
     initBtn.addEventListener("click", async () => {
       const secret = input.value.trim();
       if (!secret) {
@@ -131,32 +143,24 @@ export function renderAdminPageHtml(): string {
         setJson("{}");
         return;
       }
-      localStorage.setItem(storageKey, secret);
+      sessionStorage.setItem(storageKey, secret);
+      initBtn.disabled = true;
       try {
         setStatus("正在执行 init...");
         await authedFetch("/admin/init", secret, "POST");
-        const statusText = await fetchStatus(secret);
-        setStatus("Init 成功");
-        setJson(pretty(statusText));
+        await refreshStatus(secret, "Init 成功");
       } catch (err) {
         setStatus("Init 失败");
-        setJson(err && err.message ? err.message : String(err));
+        setJson(errMessage(err));
+      } finally {
+        initBtn.disabled = false;
       }
     });
 
-    const cached = localStorage.getItem(storageKey) || "";
+    const cached = sessionStorage.getItem(storageKey) || "";
     if (cached) {
       input.value = cached;
-      setStatus("正在读取 /admin/status ...");
-      fetchStatus(cached)
-        .then((statusText) => {
-          setStatus("已刷新 /admin/status");
-          setJson(pretty(statusText));
-        })
-        .catch((err) => {
-          setStatus("读取 /admin/status 失败");
-          setJson(err && err.message ? err.message : String(err));
-        });
+      refreshStatus(cached, "已刷新 /admin/status");
     }
   </script>
 </body>

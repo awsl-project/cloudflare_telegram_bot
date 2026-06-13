@@ -34,7 +34,7 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
             await next();
         } catch (error) {
             console.error(`Error: ${error}`);
-            return await ctx.reply(`Error: ${error}`);
+            return await ctx.reply("Something went wrong, please try again later");
         }
     })
 
@@ -70,7 +70,11 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
     }
     bot.command("moyuban", send_moyu)
 
-    async function openai_chat(prompt: string): Promise<any> {
+    type OpenAIChatResult = {
+        choices?: { message?: { content?: string } }[]
+    }
+
+    async function openai_chat(prompt: string): Promise<OpenAIChatResult> {
         const response = await fetch(
             `${c.env.OPENAI_API_URL}/v1/chat/completions`,
             {
@@ -80,13 +84,15 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
                 },
                 method: "POST",
                 body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
+                    model: c.env.OPENAI_MODEL || "gpt-4o-mini",
                     messages: [{ role: "user", content: prompt }],
                 }),
             }
         )
-        const result = await response.json()
-        return result
+        if (!response.ok) {
+            throw new Error(`OpenAI HTTP ${response.status}: ${await response.text()}`)
+        }
+        return await response.json() as OpenAIChatResult
     }
 
     bot.command("chatgpt", async (ctx: TgContext) => {
@@ -119,24 +125,18 @@ export function newTelegramBot(c: Context<HonoCustomType>, token: string): Teleg
     const aicommand = async (ctx: TgContext, prompt: string) => {
         try {
             const response = await openai_chat(prompt)
-            const reply = response?.choices[0]?.message?.content
-            if (reply) {
-                return await ctx.reply(reply, {
-                    parse_mode: "Markdown"
-                })
+            const reply = response?.choices?.[0]?.message?.content
+            if (!reply) {
+                console.error("Empty reply from AI")
+                return
             }
+            return await ctx.reply(reply, {
+                parse_mode: "Markdown"
+            })
         } catch (error) {
             console.error(error)
+            return await ctx.reply("AI service is unavailable, please try again later")
         }
-        const response = await c.env.AI.run("@cf/meta/llama-2-7b-chat-int8", {
-            prompt: prompt
-        }) as { response: string };
-        const reply = response?.response;
-        if (!reply) {
-            console.error("Empty reply from AI")
-            return
-        }
-        return await ctx.reply(reply)
     }
 
     return bot;

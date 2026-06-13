@@ -4,12 +4,12 @@
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
-    "hono": "^4.12.3",
+    "hono": "^4.12.25",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260301.1",
-    "wrangler": "^4.69.0"
+    "@cloudflare/workers-types": "^4.20260613.1",
+    "wrangler": "^4.100.0"
   },
   "pnpm": {
     "patchedDependencies": {
